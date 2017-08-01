@@ -72,13 +72,13 @@ function controlLight(star, msg_id) {
 
                     timer3 = requestAnimationFrame(loop);
                     timer = requestAnimationFrame(countDown);
-                } else if (this.status > 399 && this.status < 600) {
+                } else if (this.readyState == 4 && this.status > 399 && this.status < 600) {
                     alert("Oops, something went wrong! Please try again later.");
                 }
 		
             };
         
-        xhttp.open("POST", "http://104.236.138.127:8888", true);
+        xhttp.open("POST", "http://localhost/3925/", true);
         xhttp.send(star);
         
         
