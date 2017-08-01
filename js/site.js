@@ -19,12 +19,12 @@ $(document).ready(function(){
     (document, 'script', 'facebook-jssdk')
 );
 
-// Function to set the cookie
-function setCookie(c_name, value, expiredays) {
-    var exdate = new Date()
-    exdate.setDate(exdate.getDate() + expiredays)
-    document.cookie = c_name+ "=" + escape(value) +
-    ((expiredays==null) ? "" : ";expires=" + exdate.toUTCString())
+// sets a cookie with the given key value pair and expires at expireMinutes minutes
+function setCookie(key, value, expireMinutes) {
+    var date = new Date();
+    date.setTime(date.getTime() + (expireMinutes * 60 * 1000));
+    var expires = "; expires=" + date.toGMTString();
+    document.cookie = key + "=" + escape(value) + expires + "; path=/";
 }
 
 // Function to get the cookie
@@ -53,9 +53,8 @@ function submitCheck(){
     var name = document.forms["login_form"]["name"].value;
     var email = document.forms["login_form"]["email"].value;
     
-    // 1 day cookie expires, but want 30 min, didn't get chance to implement this
-    // 30 min works with chrome, but doesn't work with Safari
-    var expiryTime = 1;
+    // number of minutes to expire
+    var minutesExpire = 3;
 
     if (!(nameRegExp.test(name) && emailRegExp.test(email))) {
 
@@ -65,15 +64,8 @@ function submitCheck(){
         return false;
 
     } else {
-		var date = new Date();
-		var minutes = 30; // number of minutes til expire
-		date.setTime(date.getTime() + (minutes * 60 * 1000));
-		var expires = "; expires=" + date.toGMTString();
-		document.cookie = "user=default" + expires + "; path=/";
-
-        // setCookie("user", "default", expiryTime); // expiryTime = time cookie expires for login
+        setCookie("user", "default", minutesExpire);
         return true;
-        
     }
 }
 
