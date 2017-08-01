@@ -72,7 +72,9 @@ function controlLight(star, msg_id) {
 
                     timer3 = requestAnimationFrame(loop);
                     timer = requestAnimationFrame(countDown);
-                } 
+                } else if (this.status > 399 && this.status < 600) {
+                    alert("Oops, something went wrong! Please try again later.");
+                }
 		
             };
         
