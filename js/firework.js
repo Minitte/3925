@@ -59,12 +59,15 @@ function getCookie(c_name) {
 // Controls the light signals
 function controlLight(star, msg_id) {
 	// test server connection
+    console.log("Testing connection");
 	var xhttpTest = new XMLHttpRequest();
-	xhttpTest.open("POST", "http://104.236.138.127:8888", false);
+	xhttpTest.open("GET", "http://104.236.138.127:8888", true);
 	xhttpTest.send("test");
     
+    
 	// if server is down (status code 0), end function
-	if (xhttpTest.status == 0) { 
+	if (xhttpTest.status == 0) {
+        alert("The Lights are only active at night. Please come back and interact between 4pm - 8am. Thanks for playing.");
 		return;
 	}
 	
