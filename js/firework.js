@@ -5,7 +5,8 @@ var count = 0;
 var timer;
 var timer2, timer3;
 var star;
-var msg_num;
+var msg_num, star_str;
+var testState = -1, testStatus = -1, testCount = 1;
 
 var SCREEN_WIDTH = window.innerWidth,
     SCREEN_HEIGHT = window.innerHeight,
@@ -56,33 +57,68 @@ function getCookie(c_name) {
     return "";
 }
 
-// Controls the light signals
+/* 
+ *  Entry function for the star buttons
+ *  @param star     the star string
+ *  @param msg_id   star id
+ */
 function controlLight(star, msg_id) {
-	// test server connection
-    console.log("Testing connection");
-	var xhttpTest = new XMLHttpRequest();
+    console.log("controlLight()");
+    msg_num = msg_id;
+    star_str = star;
+	testConnection();
+    checkConnection();
+}
+
+/* 
+ *  Attempts to test connection
+ */
+function testConnection() {
+    console.log("testConnection()");
+    var xhttpTest = new XMLHttpRequest();
 	xhttpTest.open("GET", "http://104.236.138.127:8888", true);
+    xhttpTest.onreadystatechange = function() {
+        testState = this.readyState;
+        testStatus = this.status;
+    }
 	xhttpTest.send("test");
-    
-    
-	// if server is down (status code 0), end function
-	if (xhttpTest.status == 0) {
+}
+
+/* 
+ *  Checks the connection every 100ms 10 times
+ */
+function checkConnection() {
+    console.log("checkConnection()");
+    console.log("Attempt = " + testCount + " ; state = " + testState + " ; status = " + testStatus);
+    if (testState != 4 && testCount < 10) {     // checking connection
+        testCount++;
+        setTimeout(checkConnection, 100);
+    } else {                                    // timed out or success
+        if (testState == 4 && testState != 0) { // success
+            testState = -1;
+            testStatus = -1;
+            testCount = 1;
+            promptLogin();
+            return;
+        }
         alert("The Lights are only active at night. Please come back and interact between 4pm - 8am. Thanks for playing.");
-		return;
-	}
-	
-	// login and fire work stuff
+    }
+}
+
+/* 
+ *  Fire works and stuff
+ */
+function promptLogin(){
     if (!getCookie("user")) {
         document.getElementById("btnLogin").click();
     } else {
-        msg_num = msg_id;
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
-                count = this.responseText - 1;
+                count = this.responseText - 6;
 
                 $('.modal4-bg').fadeIn();
-                drawCanvas(star);
+                drawCanvas(star_str);
 
                 timer3 = requestAnimationFrame(loop);
                 timer = requestAnimationFrame(countDown);
@@ -93,7 +129,7 @@ function controlLight(star, msg_id) {
         };
         
         xhttp.open("POST", "http://104.236.138.127:8888", true);
-        xhttp.send(star);
+        xhttp.send(star_str);
     }
 }
 
