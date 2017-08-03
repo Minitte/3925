@@ -56,23 +56,15 @@ function getCookie(c_name) {
     return "";
 }
 
-
-var testStatus;
-
 // Controls the light signals
 function controlLight(star, msg_id) {
 	// test server connection
 	var xhttpTest = new XMLHttpRequest();
-	xhttpTest.onreadystatechange = function() {
-		if (this.readState === 4) {
-			testStatus = this.status; // save status code
-		}
-	}
 	xhttpTest.open("POST", "http://104.236.138.127:8888", false);
 	xhttpTest.send("test");
-	
+    
 	// if server is down (status code 0), end function
-	if (testStatus == 0) { 
+	if (xhttpTest.status == 0) { 
 		return;
 	}
 	
