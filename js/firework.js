@@ -56,33 +56,49 @@ function getCookie(c_name) {
     return "";
 }
 
+
+var testStatus;
+
 // Controls the light signals
 function controlLight(star, msg_id) {
-    if(!getCookie("user")) {
+	// test server connection
+	var xhttpTest = new XMLHttpRequest();
+	xhttpTest.onreadystatechange = function() {
+		if (this.readState === 4) {
+			testStatus = this.status; // save status code
+		}
+	}
+	xhttpTest.open("POST", "http://104.236.138.127:8888", false);
+	xhttpTest.send("test");
+	
+	// if server is down (status code 0), end function
+	if (testStatus == 0) { 
+		return;
+	}
+	
+	// login and fire work stuff
+    if (!getCookie("user")) {
         document.getElementById("btnLogin").click();
     } else {
-		msg_num = msg_id;
+        msg_num = msg_id;
         var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    count = this.responseText - 1;
-                    
-                    $('.modal4-bg').fadeIn();
-                    drawCanvas(star);
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                count = this.responseText - 1;
 
-                    timer3 = requestAnimationFrame(loop);
-                    timer = requestAnimationFrame(countDown);
-                } else if (this.readyState == 4 && this.status > 399 && this.status < 600) {
-                    alert("Oops, something went wrong! Please try again later.");
-                }
-		
-            };
+                $('.modal4-bg').fadeIn();
+                drawCanvas(star);
+
+                timer3 = requestAnimationFrame(loop);
+                timer = requestAnimationFrame(countDown);
+
+            } else if (this.readyState == 4 && ((this.status > 399 && this.status < 600) || this.status === 0)) {
+                alert("The Lights are only active at night. Please come back and interact between 4pm - 8am. Thanks for playing.");
+            }
+        };
         
-        xhttp.open("POST", "http://localhost/3925/", true);
+        xhttp.open("POST", "http://104.236.138.127:8888", true);
         xhttp.send(star);
-        
-        
-        
     }
 }
 
