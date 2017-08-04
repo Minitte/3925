@@ -6,7 +6,7 @@ var timer;
 var timer2, timer3;
 var star;
 var msg_num, star_str;
-var testState = -1, testStatus = -1, testCount = 1;
+var testState, testStatus, testCount;
 
 var SCREEN_WIDTH = window.innerWidth,
     SCREEN_HEIGHT = window.innerHeight,
@@ -75,6 +75,9 @@ function controlLight(star, msg_id) {
  */
 function testConnection() {
     console.log("testConnection()");
+    testState = -1;
+    testStatus = 0;
+    testCount = 1;
     var xhttpTest = new XMLHttpRequest();
 	xhttpTest.open("GET", "http://104.236.138.127:8888", true);
     xhttpTest.onreadystatechange = function() {
@@ -85,23 +88,20 @@ function testConnection() {
 }
 
 /* 
- *  Checks the connection every 100ms 10 times
+ *  Checks the connection every 150ms 20 times
  */
 function checkConnection() {
     console.log("checkConnection()");
     console.log("Attempt = " + testCount + " ; state = " + testState + " ; status = " + testStatus);
-    if (testState != 4 && testCount < 10) {     // checking connection
+    if (testState != 4 && testCount < 20) {     // checking connection
         testCount++;
-        setTimeout(checkConnection, 100);
+        setTimeout(checkConnection, 150);
     } else {                                    // timed out or success
-        if (testState == 4 && testState != 0) { // success
-            testState = -1;
-            testStatus = -1;
-            testCount = 1;
+        if (testState === 4 && testStatus === 200) { // success
             promptLogin();
-            return;
+        } else {
+            alert("The Lights are only active at night. Please come back and interact between 4pm - 8am. Thanks for playing.");
         }
-        alert("The Lights are only active at night. Please come back and interact between 4pm - 8am. Thanks for playing.");
     }
 }
 
